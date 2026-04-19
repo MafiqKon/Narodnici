@@ -1,0 +1,144 @@
+﻿@model Narodnici.Models.Book
+
+@{
+    ViewData["Title"] = "Редактиране на книга";
+}
+
+<div class="container mt-5 mb-5" style="max-width: 800px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold" style="color: var(--primary);">
+            <i data-lucide="edit-3" class="me-2"></i> Редактирай "@Model.Title"
+        </h2>
+        <a asp-controller="Admin" asp-action="Books" class="btn btn-outline-secondary rounded-pill fw-bold">
+            <i data-lucide="arrow-left" class="me-1"></i> Назад
+        </a>
+    </div>
+
+    <div class="custom-card p-4 p-md-5">
+        <form asp-action="Edit">
+            <div asp-validation-summary="All" class="alert alert-danger mb-4" style="border-radius: 12px; display: @(ViewData.ModelState.IsValid ? "none" : "block");"></div>
+
+            <input type="hidden" asp-for="Id" />
+
+            <div class="row g-4">
+                <div class="col-md-8">
+                    <div class="form-group mb-3">
+                        <label asp-for="Title" class="form-label fw-bold" style="color: var(--text-main);">Заглавие</label>
+                        <input asp-for="Title" class="form-control rounded-pill" style="background-color: var(--bg-body); border-color: var(--border-color); color: var(--text-main);" />
+                        <span asp-validation-for="Title" class="text-danger small fw-bold"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label asp-for="AuthorId" class="form-label fw-bold" style="color: var(--text-main);">Автор</label>
+                        <select asp-for="AuthorId" class="form-select rounded-pill" asp-items="@(new SelectList(ViewBag.Authors, "Id", "Name"))" style="background-color: var(--bg-body); border-color: var(--border-color); color: var(--text-main);"></select>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="Genre" class="form-label fw-bold" style="color: var(--text-main);">Жанр</label>
+                        <input asp-for="Genre" class="form-control rounded-pill" style="background-color: var(--bg-body); border-color: var(--border-color); color: var(--text-main);" />
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="StudyYear" class="form-label fw-bold" style="color: var(--text-main);">Клас (Учебна година)</label>
+                        <input asp-for="StudyYear" class="form-control rounded-pill" style="background-color: var(--bg-body); border-color: var(--border-color); color: var(--text-main);" />
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="form-group mb-3">
+                        <label asp-for="Description" class="form-label fw-bold" style="color: var(--text-main);">Описание / Сюжет</label>
+                        <textarea asp-for="Description" class="form-control rounded-4" rows="5" style="background-color: var(--bg-body); border-color: var(--border-color); color: var(--text-main);"></textarea>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="form-group mb-3">
+                        <label asp-for="FullText" class="form-label fw-bold" style="color: var(--text-main);">Пълен текст на произведението</label>
+                        <textarea asp-for="FullText" class="form-control rounded-4" rows="15" placeholder="Постави целия текст тук..." style="background-color: var(--bg-body); border-color: var(--border-color); color: var(--text-main);"></textarea>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="form-group form-check">
+                        <input class="form-check-input" asp-for="IsForMatura" />
+                        <label class="form-check-label fw-bold" style="color: var(--text-main);" asp-for="IsForMatura">
+                            Произведението е част от матурата
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-12 mt-4">
+                    <div class="card p-4 rounded-4 shadow-sm" style="background-color: var(--bg-body); border: 2px dashed var(--primary);">
+                        <div class="form-check form-switch mb-3 d-flex align-items-center">
+                            <input class="form-check-input me-2" type="checkbox" asp-for="HasPopup" id="hasPopupToggle" style="width: 40px; height: 20px; cursor: pointer;">
+                            <label class="form-check-label fw-bold mb-0" for="hasPopupToggle" style="color: var(--primary); cursor: pointer; font-size: 1.1rem;">
+                                Активирай допълнителен Pop-up прозорец
+                            </label>
+                        </div>
+
+                        <div id="popupSettingsContainer" style="display: none; transition: all 0.3s ease;">
+                            <div class="form-group mb-4 mt-3">
+                                <label asp-for="PopupContent" class="form-label fw-bold" style="color: var(--text-main);">Форматиран текст за прозореца</label>
+                                <textarea asp-for="PopupContent" class="form-control rounded-4" rows="4" placeholder="Въведете допълнителната информация тук..." style="background-color: var(--bg-card); border-color: var(--border-color); color: var(--text-main);"></textarea>
+                            </div>
+
+                            <div class="form-check form-switch mb-3 d-flex align-items-center">
+                                <input class="form-check-input me-2" type="checkbox" asp-for="HasPopupLink" id="hasLinkToggle" style="cursor: pointer;">
+                                <label class="form-check-label fw-bold mb-0" for="hasLinkToggle" style="cursor: pointer; color: var(--text-main);">
+                                    Добави скрит линк (бутон "Натисни тук")
+                                </label>
+                            </div>
+
+                            <div id="linkSettingsContainer" style="display: none;" class="form-group mb-3">
+                                <label asp-for="PopupLinkUrl" class="form-label fw-bold" style="color: var(--text-main);">URL Адрес на линка (напр. https://chitanka.info/...)</label>
+                                <input asp-for="PopupLinkUrl" class="form-control rounded-pill" placeholder="https://..." style="background-color: var(--bg-card); border-color: var(--border-color); color: var(--text-main);" />
+                                <span asp-validation-for="PopupLinkUrl" class="text-danger small fw-bold"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr style="border-color: var(--border-color);" class="my-4" />
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary rounded-pill px-5 py-2 fw-bold shadow-sm hover-scale">
+                    <i data-lucide="save" class="me-2" style="width: 18px;"></i> Запази промените
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        const hasPopupToggle = document.getElementById('hasPopupToggle');
+        const popupSettings = document.getElementById('popupSettingsContainer');
+        const hasLinkToggle = document.getElementById('hasLinkToggle');
+        const linkSettings = document.getElementById('linkSettingsContainer');
+
+        function togglePopupUI() {
+            if(popupSettings) popupSettings.style.display = hasPopupToggle.checked ? 'block' : 'none';
+        }
+
+        function toggleLinkUI() {
+            if(linkSettings) linkSettings.style.display = hasLinkToggle.checked ? 'block' : 'none';
+        }
+
+        if(hasPopupToggle) hasPopupToggle.addEventListener('change', togglePopupUI);
+        if(hasLinkToggle) hasLinkToggle.addEventListener('change', toggleLinkUI);
+
+        togglePopupUI();
+        toggleLinkUI();
+    </script>
+}

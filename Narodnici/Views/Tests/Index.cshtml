@@ -1,0 +1,235 @@
+﻿@model IEnumerable<Narodnici.Models.Test>
+
+@{
+    ViewData["Title"] = "Всички тестове";
+}
+
+<div class="container mt-4 mb-5 pt-3">
+
+    <div class="d-flex align-items-center mb-4 pb-2 border-bottom" style="border-color: var(--border-color) !important;">
+        <i data-lucide="file-check-2" class="me-3" style="color: var(--primary); width: 32px; height: 32px;"></i>
+        <h2 class="fw-bold mb-0" style="color: var(--text-main);">Всички тестове</h2>
+    </div>
+
+    <h4 class="fw-bold mb-3 mt-4" style="color: var(--text-main);">⚡ Бърза тренировка</h4>
+    <div class="row mb-5 g-4">
+
+        <div class="col-md-6 col-lg-4">
+            <div class="custom-card h-100 p-4 position-relative overflow-hidden" style="border-left: 4px solid var(--primary) !important;">
+                <i data-lucide="zap" class="position-absolute" style="color: var(--primary); opacity: 0.05; width: 120px; height: 120px; right: -20px; bottom: -20px;"></i>
+
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="rounded-circle d-flex justify-content-center align-items-center" style="width: 48px; height: 48px; background-color: var(--bg-body); border: 1px solid var(--border-color);">
+                        <i data-lucide="brain-circuit" style="color: var(--primary);"></i>
+                    </div>
+                    <span class="badge rounded-pill" style="background-color: var(--bg-body); color: var(--primary); border: 1px solid var(--primary);">10 въпроса</span>
+                </div>
+
+                <h5 class="fw-bold mb-1" style="color: var(--text-main);">Железният светилник</h5>
+                <p class="text-muted small mb-4">Само затворени въпроси. Провери знанията си веднага, без таймер и напрежение!</p>
+
+                <a asp-action="PracticeTest" asp-route-id="1" class="btn btn-hover-green w-100 mt-auto fw-bold">
+                    <i data-lucide="play" class="me-2"></i> Започни тренировка
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="custom-card h-100 p-4 position-relative overflow-hidden" style="border-left: 4px solid #f59e0b !important;">
+                <i data-lucide="file-type-2" class="position-absolute" style="color: #f59e0b; opacity: 0.05; width: 120px; height: 120px; right: -20px; bottom: -20px;"></i>
+
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="rounded-circle d-flex justify-content-center align-items-center" style="width: 48px; height: 48px; background-color: var(--bg-body); border: 1px solid var(--border-color);">
+                        <i data-lucide="pen-tool" style="color: #f59e0b;"></i>
+                    </div>
+                    <span class="badge rounded-pill" style="background-color: var(--bg-body); color: #f59e0b; border: 1px solid #f59e0b;">Смесен формат</span>
+                </div>
+
+                <h5 class="fw-bold mb-1" style="color: var(--text-main);">Под игото</h5>
+                <p class="text-muted small mb-4">Предизвикателство! 8 въпроса с избираем отговор и 2 със свободен текст.</p>
+
+                <a asp-action="PracticeTest" asp-route-id="2" class="btn w-100 mt-auto fw-bold" style="background-color: var(--bg-body); color: #f59e0b; border: 2px solid #f59e0b; border-radius: 12px; transition: all 0.2s;" onmouseover="this.style.backgroundColor='#f59e0b'; this.style.color='white';" onmouseout="this.style.backgroundColor='var(--bg-body)'; this.style.color='#f59e0b';">
+                    <i data-lucide="play" class="me-2"></i> Започни тренировка
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="custom-card p-4 mb-4 shadow-sm" style="background-color: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-color);">
+        <div class="row align-items-center g-3">
+            <div class="col-md-5 col-lg-4">
+                <h4 class="fw-bold mb-0 d-flex align-items-center" style="color: var(--text-main);">
+                    <div class="p-2 rounded-3 text-white me-3 d-flex align-items-center justify-content-center shadow-sm" style="background-color: var(--primary); width: 42px; height: 42px;">
+                        <i data-lucide="library"></i>
+                    </div>
+                    Официални тестове
+                </h4>
+            </div>
+            <div class="col-md-7 col-lg-8">
+                @if (Model.Any())
+                {
+                    <div class="position-relative search-container">
+                        <i data-lucide="search" class="position-absolute top-50 translate-middle-y ms-4 text-muted search-icon" style="width: 20px; height: 20px; z-index: 5; transition: color 0.3s;"></i>
+                        <input type="text" id="liveSearchInput" class="form-control premium-search-input shadow-sm" placeholder="Търси по заглавие на тест, произведение или автор...">
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    @if (!Model.Any())
+    {
+        <div class="custom-card p-5 text-center shadow-sm">
+            <div class="d-inline-flex justify-content-center align-items-center rounded-circle mb-4" style="width: 80px; height: 80px; background-color: var(--bg-body); border: 2px dashed var(--border-color);">
+                <i data-lucide="inbox" style="color: var(--text-muted); width: 40px; height: 40px;"></i>
+            </div>
+            <h5 class="fw-bold mb-2" style="color: var(--text-main);">Няма налични официални тестове</h5>
+            <p class="text-muted mb-0">Учителите все още не са публикували нови тестове за решаване.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4" id="testsContainer">
+            @foreach (var test in Model)
+            {
+                <div class="col-md-6 col-lg-4 searchable-card">
+                    <div class="custom-card h-100 p-4 d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="rounded-circle d-flex justify-content-center align-items-center" style="width: 48px; height: 48px; background-color: var(--bg-body); border: 1px solid var(--border-color);">
+                                <i data-lucide="book-open" style="color: var(--text-main);"></i>
+                            </div>
+                            <span class="badge rounded-pill" style="background-color: var(--bg-body); color: var(--text-muted); border: 1px solid var(--border-color);">
+                                <i data-lucide="clock" style="width: 12px; height: 12px; margin-top: -2px;"></i> @test.TimeLimitMinutes мин
+                            </span>
+                        </div>
+
+                        <h5 class="fw-bold mb-1 search-title" style="color: var(--text-main);">@test.Title</h5>
+                        <p class="text-muted small mb-3 search-subtitle">@(test.Book?.Title ?? "Общ тест") @(test.Book?.Author?.Name != null ? $"- {test.Book.Author.Name}" : "")</p>
+
+                        <p class="text-muted small mb-4" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                            @test.Description
+                        </p>
+
+                        <a asp-action="Start" asp-route-id="@test.Id" class="btn btn-hover-gray w-100 mt-auto fw-bold">
+                            <i data-lucide="edit-3" class="me-2"></i> Реши теста
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div id="noResultsMessage" class="text-center py-5 d-none">
+            <i data-lucide="search-x" class="text-muted mb-3" style="width: 56px; height: 56px; opacity: 0.5;"></i>
+            <h4 class="fw-bold mb-2" style="color: var(--text-main);">Няма намерени тестове</h4>
+            <p class="text-muted mb-0" style="font-size: 1.1rem;">Опитайте с друга ключова дума или име на автор.</p>
+        </div>
+    }
+</div>
+
+<style>
+    /* Нови класове за красиви бутони без onmouseover */
+    .btn-hover-green {
+        background-color: #6a9c78;
+        color: white;
+        border: 1px solid #6a9c78;
+        border-radius: 12px;
+        transition: all 0.2s ease-in-out;
+    }
+
+        .btn-hover-green:hover {
+            background-color: #558061; /* Тъмно зелено */
+            border-color: #558061;
+            color: white;
+        }
+
+    .btn-hover-gray {
+        background-color: var(--bg-body);
+        color: var(--text-main);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        transition: all 0.2s ease-in-out;
+    }
+
+        .btn-hover-gray:hover {
+            background-color: #f3f4f6; /* Леко сиво */
+            border-color: #d1d5db;
+            color: var(--text-main);
+        }
+
+    /* ========================================= */
+    /* СТИЛОВЕ ЗА ПРЕМИУМ ТЪРСАЧКАТА             */
+    /* ========================================= */
+    .premium-search-input {
+        background-color: var(--bg-body) !important;
+        color: var(--text-main) !important;
+        border: 2px solid var(--border-color) !important;
+        border-radius: 50rem !important; /* Напълно заоблени краища */
+        padding: 14px 24px 14px 55px !important; /* Повече място за текста и иконата */
+        font-size: 1.05rem !important;
+        transition: all 0.3s ease !important;
+        width: 100% !important;
+    }
+
+        /* Фокус ефектът: Нежно зелено сияние, както подобава на SaaS платформа */
+        .premium-search-input:focus {
+            background-color: var(--bg-card) !important;
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 4px rgba(106, 156, 120, 0.15) !important;
+            outline: none !important;
+        }
+
+        .premium-search-input::placeholder {
+            color: var(--text-muted) !important;
+            opacity: 0.7 !important;
+        }
+
+    /* Когато кликнеш вътре, иконката с лупата светва в зелено */
+    .search-container:focus-within .search-icon {
+        color: var(--primary) !important;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+
+        // --- ЛОГИКА ЗА LIVE SEARCH ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('liveSearchInput');
+            const searchableCards = document.querySelectorAll('.searchable-card');
+            const testsContainer = document.getElementById('testsContainer');
+            const noResultsMessage = document.getElementById('noResultsMessage');
+
+            if (searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.toLowerCase().trim();
+                    let visibleCount = 0;
+
+                    searchableCards.forEach(card => {
+                        // Търсим в заглавието на теста и в името на книгата/автора
+                        const titleText = card.querySelector('.search-title').textContent.toLowerCase();
+                        const subtitleText = card.querySelector('.search-subtitle').textContent.toLowerCase();
+
+                        if (titleText.includes(searchTerm) || subtitleText.includes(searchTerm)) {
+                            card.style.display = ''; // Показваме
+                            visibleCount++;
+                        } else {
+                            card.style.display = 'none'; // Скриваме
+                        }
+                    });
+
+                    // Ако нито един тест не отговаря на търсенето
+                    if (visibleCount === 0 && searchableCards.length > 0) {
+                        testsContainer.classList.add('d-none');
+                        noResultsMessage.classList.remove('d-none');
+                    } else {
+                        testsContainer.classList.remove('d-none');
+                        noResultsMessage.classList.add('d-none');
+                    }
+                });
+            }
+        });
+    </script>
+}

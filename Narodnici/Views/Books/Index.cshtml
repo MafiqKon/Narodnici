@@ -1,0 +1,276 @@
+﻿@model IEnumerable<Narodnici.Models.Book>
+
+@{
+    ViewData["Title"] = "Библиотека";
+}
+
+<div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
+            background: linear-gradient(rgba(15, 15, 15, 0.85), rgba(15, 15, 15, 0.85)),
+            url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=2500&auto=format&fit=crop');
+            background-size: cover; background-position: center; background-attachment: fixed;">
+</div>
+
+<div class="d-flex align-items-center mb-4 mt-3">
+    <div class="p-2 rounded-3 me-3" style="background-color: var(--primary); color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+        <i data-lucide="library" style="width: 28px; height: 28px;"></i>
+    </div>
+    <h2 class="fw-bold mb-0 text-white" style="text-shadow: 0 2px 8px rgba(0,0,0,0.8); letter-spacing: 1px;">Библиотека</h2>
+</div>
+
+@if (User.Identity.IsAuthenticated && ViewBag.OverallMaturaProgress != null)
+{
+    int overallProgress = (int)ViewBag.OverallMaturaProgress;
+    <div class="card p-4 mb-4 border-0 shadow-sm" style="background-color: var(--bg-card); border-radius: 16px; border: 2px solid var(--border-color) !important;">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
+            <h5 class="fw-bold mb-0 d-flex align-items-center" style="color: var(--text-main);">
+                <i data-lucide="graduation-cap" class="me-2 text-success" style="width: 24px; height: 24px;"></i> Готовност за матура
+            </h5>
+            <span class="badge bg-success rounded-pill px-3 py-2 fs-6 shadow-sm">@overallProgress / 100</span>
+        </div>
+        <div class="progress shadow-sm" style="height: 14px; border-radius: 10px; background-color: var(--bg-body); border: 1px solid var(--border-color);">
+            <div class="progress-bar bg-success rounded-pill" role="progressbar" style="width: @overallProgress%; transition: width 1s ease-in-out;" aria-valuenow="@overallProgress" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <div class="text-end mt-2">
+            <small class="fw-bold text-success">@overallProgress% Усвоени материали</small>
+        </div>
+    </div>
+}
+
+<div class="card p-3 mb-5 shadow" style="background-color: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-color) !important;">
+    <div class="p-3 rounded-4" style="border: 2px solid var(--border-color); background-color: rgba(150, 150, 150, 0.03);">
+        <div class="row g-2">
+            <div class="col-md-4 position-relative">
+                <i data-lucide="search" class="position-absolute top-50 translate-middle-y ms-3 text-muted" style="width: 18px; height: 18px;"></i>
+                <input type="text" id="filterSearch" class="form-control rounded-pill shadow-sm ps-5 py-2 custom-filter-input" placeholder="Търсене по заглавие или автор..." />
+            </div>
+
+            <div class="col-md-2">
+                <select id="filterAuthor" class="form-select rounded-pill px-3 py-2 shadow-sm custom-filter-input">
+                    <option value="">Всички автори</option>
+                    @foreach (var author in ViewBag.Authors)
+                    {
+                        <option value="@author">@author</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <select id="filterGenre" class="form-select rounded-pill px-3 py-2 shadow-sm custom-filter-input">
+                    <option value="">Всички жанрове</option>
+                    @foreach (var genre in ViewBag.Genres)
+                    {
+                        <option value="@genre">@genre</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <select id="filterYear" class="form-select rounded-pill px-3 py-2 shadow-sm custom-filter-input">
+                    <option value="">Всяка година</option>
+                    @foreach (var year in ViewBag.StudyYears)
+                    {
+                        <option value="@year">@year клас</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <select id="filterMatura" class="form-select rounded-pill px-3 py-2 shadow-sm custom-filter-input">
+                    <option value="">За матура?</option>
+                    <option value="true">Да</option>
+                    <option value="false">Не</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 position-relative z-1" id="booksGrid">
+    @{
+        var progressDict = ViewBag.UserProgresses as Dictionary<int, int>;
+    }
+
+    @foreach (var book in Model)
+    {
+        int bookProgress = 0;
+        if (progressDict != null && progressDict.ContainsKey(book.Id))
+        {
+            bookProgress = progressDict[book.Id];
+        }
+
+        <div class="col-md-6 col-lg-4 mb-2 searchable-item"
+             data-title="@book.Title.ToLower()"
+             data-author="@book.Author.Name.ToLower()"
+             data-genre="@book.Genre.ToLower()"
+             data-year="@book.StudyYear"
+             data-matura="@(book.IsForMatura ? "true" : "false")">
+
+            <div class="card h-100 border-0 shadow" style="background-color: var(--bg-card); border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; position: relative;">
+
+                @if (bookProgress == 100)
+                {
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 4px; background-color: #10b981;"></div>
+                }
+
+                <div class="card-body p-4" style="flex: 1;">
+                    <h3 class="fw-bold mb-1 book-title" style="color: var(--text-main); font-size: 1.4rem;">@book.Title</h3>
+                    <h5 class="mb-3 book-author" style="color: var(--primary); font-weight: 500; font-size: 1rem;">от @book.Author.Name</h5>
+
+                    <p class="text-muted mb-3" style="font-size: 1rem; line-height: 1.4; min-height: 45px; overflow: hidden;">
+                        @(book.Description?.Length > 110 ? book.Description.Substring(0, 110) + "..." : book.Description)
+                    </p>
+
+                    <div class="mb-3 d-flex flex-wrap gap-2">
+                        @if (book.IsForMatura)
+                        {
+                            <span class="badge bg-success shadow-sm rounded-pill px-3 py-2" style="font-size: 0.85rem; font-weight: 600;">🎓 За матура</span>
+                        }
+
+                        <span class="badge text-dark shadow-sm rounded-pill px-3 py-2" style="background-color: #e2e8f0; font-size: 0.85rem; font-weight: 600;">@book.Genre</span>
+                        <span class="badge bg-secondary shadow-sm rounded-pill px-3 py-2" style="font-size: 0.85rem; font-weight: 600;">@book.StudyYear клас</span>
+
+                        @if (bookProgress == 100)
+                        {
+                            <span class="badge shadow-sm rounded-pill px-3 py-2" style="background-color: #10b981; color: white; font-size: 0.85rem; font-weight: 600;">
+                                <i data-lucide="check-circle-2" class="me-1" style="width: 14px; margin-top:-2px;"></i> Усвоено
+                            </span>
+                        }
+                        else if (bookProgress > 0)
+                        {
+                            <span class="badge shadow-sm rounded-pill px-3 py-2" style="background-color: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid #10b981; font-size: 0.85rem; font-weight: 600;">
+                                Прогрес: @bookProgress%
+                            </span>
+                        }
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(book.Tags))
+                    {
+                        <div class="mt-2 d-flex flex-wrap gap-2 p-2 rounded-4" style="background-color: var(--bg-body); border: 1px solid var(--border-color);">
+                            @foreach (var tag in book.Tags.Split(','))
+                            {
+                                <span class="fw-bold" style="color: #5d4037; font-size: 0.9rem; margin-right: 4px;">#@tag.Trim()</span>
+                            }
+                        </div>
+                    }
+                </div>
+
+                <div class="card-footer bg-transparent border-0 px-4 pb-4 pt-0 d-flex flex-column gap-3">
+                    <div class="d-flex justify-content-between px-1">
+                        @if (book.Analyses.Any())
+                        {
+                            <span class="small fw-bold text-success" style="font-size: 0.85rem;"><i data-lucide="bar-chart-2" style="width: 14px;" class="me-1"></i> Анализи (@book.Analyses.Count)</span>
+                        }
+                        @if (book.Tests.Any())
+                        {
+                            <span class="small fw-bold text-info" style="font-size: 0.85rem;"><i data-lucide="check-square" style="width: 14px;" class="me-1"></i> Тестове (@book.Tests.Count)</span>
+                        }
+                    </div>
+
+                    <a href="@Url.Action("Details", new { id = book.Id })" class="btn btn-solid-premium w-100 py-2 fw-bold text-uppercase shadow-sm" style="letter-spacing: 1px; font-size: 0.9rem; border-radius: 12px;">
+                        Виж произведението
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div id="noResultsLiveMessage" class="alert text-center p-5 rounded-4 shadow mt-4 border-0 d-none w-100" style="background-color: var(--bg-card); color: var(--text-muted); position: relative; z-index: 1;">
+    <i data-lucide="search-x" class="mb-3 opacity-50" style="width: 48px; height: 48px;"></i>
+    <h5 class="fw-bold">Няма намерени книги</h5>
+    <p class="mb-0">Опитайте с различни филтри.</p>
+</div>
+
+<style>
+    /* Стилизация на филтрите (връщаме рамките) */
+    .custom-filter-input {
+        background-color: var(--bg-body) !important;
+        color: var(--text-main) !important;
+        border: 1px solid var(--border-color) !important;
+        transition: all 0.2s ease;
+    }
+
+        .custom-filter-input:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 0.25rem rgba(106, 156, 120, 0.25) !important;
+        }
+
+    .card {
+        transition: box-shadow 0.3s ease, transform 0.3s ease !important;
+        transform: none !important;
+    }
+
+        .card:hover {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2) !important;
+        }
+
+    .btn i {
+        stroke-width: 2.5px;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+
+        // КОМПЛЕКСНО ТЪРСЕНЕ НА ЖИВО (MULTI-FILTER)
+        const filterSearch = document.getElementById('filterSearch');
+        const filterAuthor = document.getElementById('filterAuthor');
+        const filterGenre = document.getElementById('filterGenre');
+        const filterYear = document.getElementById('filterYear');
+        const filterMatura = document.getElementById('filterMatura');
+
+        const items = document.querySelectorAll('.searchable-item');
+        const noResultsMsg = document.getElementById('noResultsLiveMessage');
+
+        function applyFilters() {
+            const searchVal = filterSearch.value.toLowerCase().trim();
+            const authorVal = filterAuthor.value.toLowerCase().trim();
+            const genreVal = filterGenre.value.toLowerCase().trim();
+            const yearVal = filterYear.value.trim();
+            const maturaVal = filterMatura.value;
+
+            let visibleCount = 0;
+
+            items.forEach(item => {
+                // Взимаме данните скрити в data-* атрибутите на всяка кутийка
+                const t = item.dataset.title || "";
+                const a = item.dataset.author || "";
+                const g = item.dataset.genre || "";
+                const y = item.dataset.year || "";
+                const m = item.dataset.matura || "";
+
+                // За да не става грешка с "би", главното търсене търси САМО в заглавието и автора
+                const matchSearch = searchVal === '' || t.includes(searchVal) || a.includes(searchVal);
+                const matchAuthor = authorVal === '' || a.includes(authorVal);
+                const matchGenre  = genreVal === '' || g.includes(genreVal);
+                const matchYear   = yearVal === '' || y === yearVal || y.includes(yearVal);
+                const matchMatura = maturaVal === '' || m === maturaVal;
+
+                if (matchSearch && matchAuthor && matchGenre && matchYear && matchMatura) {
+                    item.style.display = '';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Показване/скриване на съобщението
+            if (visibleCount === 0 && items.length > 0) {
+                noResultsMsg.classList.remove('d-none');
+            } else {
+                noResultsMsg.classList.add('d-none');
+            }
+        }
+
+        // Закачаме слушатели към всички полета, за да филтрират ВЕДНАГА щом пипнеш нещо
+        [filterSearch, filterAuthor, filterGenre, filterYear, filterMatura].forEach(input => {
+            if(input) {
+                input.addEventListener('input', applyFilters); // За писане
+                input.addEventListener('change', applyFilters); // За цъкане на опция
+            }
+        });
+    </script>
+}

@@ -1,0 +1,140 @@
+﻿@model IEnumerable<Narodnici.Controllers.StudentViewModel>
+
+@{
+    ViewData["Title"] = "Управление на студенти";
+}
+
+<div class="container mt-4 mb-5 pt-3">
+    <div class="mb-3 mt-2 d-flex align-items-center">
+        <button onclick="history.back()" class="btn btn-sm rounded-pill fw-bold d-inline-flex align-items-center shadow-sm px-3" style="background-color: var(--bg-body); border: 1px solid var(--border-color); color: var(--text-main); transition: all 0.2s ease-in-out;" onmouseover="this.style.backgroundColor='var(--primary)'; this.style.color='white'; this.style.borderColor='var(--primary)';" onmouseout="this.style.backgroundColor='var(--bg-body)'; this.style.color='var(--text-main)'; this.style.borderColor='var(--border-color)';">
+            <i data-lucide="arrow-left" class="me-2" style="width: 16px; height: 16px;"></i> Назад
+        </button>
+    </div>
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-3 border-bottom" style="border-color: var(--border-color) !important;">
+        <div class="d-flex align-items-center mb-3 mb-md-0">
+            <i data-lucide="users" class="me-3" style="color: var(--primary); width: 32px; height: 32px;"></i>
+            <h2 class="fw-bold mb-0" style="color: var(--text-main);">Управление на студенти</h2>
+        </div>
+
+        <div class="position-relative" style="width: 100%; max-width: 350px;">
+            <i data-lucide="search" class="position-absolute top-50 translate-middle-y ms-3 text-muted" style="width: 18px; height: 18px;"></i>
+            <input type="text" id="liveSearchInput" class="form-control rounded-pill shadow-sm ps-5 py-2 border-0" style="background-color: var(--bg-card); color: var(--text-main);" placeholder="Търси по име или имейл...">
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="custom-card p-4 shadow-sm" style="background-color: var(--bg-card); border-radius: 16px;">
+
+            <div class="table-responsive" id="tableContainer">
+                <table class="table table-hover align-middle mb-0">
+                    <thead style="border-bottom: 2px solid var(--border-color);">
+                        <tr>
+                            <th class="text-muted small text-uppercase pb-3">Ученик</th>
+                            <th class="text-muted small text-uppercase pb-3">Регистрация</th>
+                            <th class="text-muted small text-uppercase pb-3 text-center">Прочетени Книги</th>
+                            <th class="text-muted small text-uppercase pb-3 text-center">Колекции</th>
+                            <th class="text-muted small text-uppercase pb-3 text-end">Действие</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTableBody">
+                        @foreach (var student in Model)
+                        {
+                            <tr class="searchable-item" style="border-bottom: 1px solid var(--border-color);">
+                                <td class="py-3">
+                                    <div class="fw-bold student-name" style="color: var(--text-main);">@student.FirstName @student.LastName</div>
+                                    <small class="text-muted student-email">@student.Email</small>
+                                </td>
+                                <td class="py-3 text-muted">@student.RegistrationDate.ToString("dd.MM.yyyy")</td>
+                                <td class="py-3 text-center fw-bold" style="color: var(--primary);">@student.BooksCount</td>
+                                <td class="py-3 text-center text-muted">@student.CollectionsCount</td>
+                                <td class="py-3 text-end">
+                                    <a href="@Url.Action("StudentDetails", "Teacher", new { id = student.Id })" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold shadow-sm">
+                                        Детайли
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="noResultsMessage" class="text-center py-5 d-none">
+                <i data-lucide="search-x" class="text-muted mb-3" style="width: 48px; height: 48px; opacity: 0.5;"></i>
+                <h5 class="fw-bold mb-1" style="color: var(--text-main);">Няма намерени резултати</h5>
+                <p class="text-muted mb-0">Опитайте с различно име или имейл.</p>
+            </div>
+
+        </div>
+    }
+    else
+    {
+        <div class="custom-card p-5 text-center shadow-sm" style="background-color: var(--bg-card); border-radius: 16px;">
+            <div class="d-inline-flex justify-content-center align-items-center rounded-circle mb-4" style="width: 80px; height: 80px; background-color: rgba(150,150,150,0.05); border: 2px dashed var(--border-color);">
+                <i data-lucide="user-x" style="color: var(--text-muted); width: 40px; height: 40px;"></i>
+            </div>
+            <h4 class="fw-bold mb-3" style="color: var(--text-main);">Все още няма регистрирани ученици</h4>
+            <p class="text-muted mb-0">Когато учениците се регистрират в системата, те ще се появят тук.</p>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+
+        // ЛОГИКА ЗА ТЪРСЕНЕ НА ЖИВО (LIVE SEARCH)
+        const searchInput = document.getElementById('liveSearchInput');
+        const searchableItems = document.querySelectorAll('.searchable-item');
+        const tableContainer = document.getElementById('tableContainer');
+        const noResultsMessage = document.getElementById('noResultsMessage');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                let visibleCount = 0;
+
+                searchableItems.forEach(item => {
+                    const textContent = item.textContent.toLowerCase();
+
+                    if (textContent.includes(searchTerm)) {
+                        item.style.display = '';
+                        visibleCount++;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                // Ако няма съвпадения, скриваме ЦЯЛАТА таблица и показваме красивото съобщение
+                if (visibleCount === 0 && searchableItems.length > 0) {
+                    tableContainer.classList.add('d-none');
+                    noResultsMessage.classList.remove('d-none');
+                } else {
+                    tableContainer.classList.remove('d-none');
+                    noResultsMessage.classList.add('d-none');
+                }
+            });
+        }
+    </script>
+
+    <style>
+        /* ПЕРФЕКТЕН HOVER ЗА ТАБЛИЦАТА */
+        tbody tr {
+            transition: background-color 0.2s ease-in-out;
+        }
+
+            tbody tr td {
+                /* Премахваме транзициите от самите клетки, за да няма забавяне */
+                transition: none !important;
+                background-color: transparent !important;
+            }
+
+            tbody tr:hover {
+                background-color: rgba(16, 185, 129, 0.08) !important;
+                cursor: pointer;
+            }
+    </style>
+}
